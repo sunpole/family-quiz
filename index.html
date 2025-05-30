@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>family-quiz</title>
+</head>
+<body>
+  <!-- Навигация -->
+  <nav id="navbar">
+    <span class="logo">Family Quiz</span>
+    <ul id="nav-links">
+      <li><a href="#questions" id="nav-questions">Вопросы</a></li>
+      <li><a href="#ask" id="nav-ask">Задать вопрос</a></li>
+      <li><a href="#search" id="nav-search">Поиск</a></li>
+      <li id="admin-nav-link" style="display:none;"><a href="#admin-panel">Админ</a></li>
+    </ul>
+    <div id="user-bar">
+      <span id="user-info"></span>
+      <button id="login-btn">Войти</button>
+      <button id="register-btn">Регистрация</button>
+      <button id="logout-btn" style="display:none;">Выйти</button>
+    </div>
+  </nav>
+
+  <!-- Контент -->
+  <main id="main-view">
+    <!-- 1. Страница вопросов (список) -->
+    <section id="questions-page" class="page-section">
+      <h2>Список вопросов</h2>
+      <div id="questions-filter">
+        <input type="text" id="question-search" placeholder="Поиск по тексту или тегу...">
+      </div>
+      <div id="question-list"></div>
+      <div id="ask-link" style="margin-top: 1em;">
+        <a href="#ask">+ Задать новый вопрос</a>
+      </div>
+    </section>
+
+    <!-- 2. Страница "Задать вопрос" -->
+    <section id="ask-page" class="page-section" style="display:none;">
+      <h2>Задать вопрос</h2>
+      <form id="ask-form">
+        <label>
+          Вопрос:
+          <textarea id="ask-question" required></textarea>
+        </label>
+        <label>
+          Теги (через запятую):
+          <input type="text" id="ask-tags">
+        </label>
+        <button type="submit">Опубликовать</button>
+        <button type="button" id="ask-cancel">Отмена</button>
+      </form>
+    </section>
+
+    <!-- 3. Страница ответов по выбранному вопросу -->
+    <section id="answers-page" class="page-section" style="display:none;">
+      <button type="button" id="answers-back">← К вопросам</button>
+      <h2 id="answers-question"></h2>
+      <div id="answers-list"></div>
+      <form id="answer-form" style="display:none;">
+        <label>
+          Ваш ответ:
+          <textarea id="answer-text" required></textarea>
+        </label>
+        <button type="submit">Ответить</button>
+      </form>
+    </section>
+
+    <!-- 4. Страница поиска -->
+    <section id="search-page" class="page-section" style="display:none;">
+      <h2>Поиск и фильтры</h2>
+      <div>
+        <input type="text" id="search-input" placeholder="Найти вопрос или ответ...">
+        <input type="text" id="search-tags" placeholder="Теги через запятую">
+        <button id="search-btn">Искать</button>
+      </div>
+      <div id="search-results"></div>
+    </section>
+
+    <!-- 5. Форма авторизации -->
+    <section id="login-page" class="page-section" style="display:none;">
+      <h2>Войти</h2>
+      <form id="login-form">
+        <label>
+          Логин:
+          <input type="text" id="login-login" required autocomplete="username">
+        </label>
+        <label>
+          Пароль:
+          <input type="password" id="login-password" required autocomplete="current-password">
+        </label>
+        <p style="font-size:0.95em; color: #555; margin-top:-8px;">По умолчанию пароль: <b>0000</b></p>
+        <button type="submit">Войти</button>
+      </form>
+      <div>
+        <button id="login-to-register">Нет аккаунта? Регистрация</button>
+      </div>
+    </section>
+
+    <!-- 6. Форма регистрации -->
+    <section id="register-page" class="page-section" style="display:none;">
+      <h2>Регистрация</h2>
+      <form id="register-form">
+        <label>
+          Логин:
+          <input type="text" id="register-login" required autocomplete="username">
+        </label>
+        <input type="hidden" id="register-password" value="0000">
+        <p style="font-size:0.95em; color:#555; margin-top:-8px;">
+          Ваш пароль будет автоматически установлен как <b>0000</b>.<br>
+          Изменить его может только администратор через Google Таблицу.<br>
+          Пожалуйста, свяжитесь с админом для смены пароля.
+        </p>
+        <button type="submit">Зарегистрироваться</button>
+      </form>
+      <div>
+        <button id="register-to-login">Уже есть аккаунт? Войти</button>
+      </div>
+    </section>
+
+    <!-- 7. Админ-панель -->
+    <section id="admin-panel" class="page-section" style="display:none;">
+      <h2>Административная панель</h2>
+      <p>Вы вошли как <b>администратор</b>. Здесь доступно редактирование и удаление любой записи в базе (кроме уникальных ID).</p>
+      <div id="admin-tabs">
+        <button class="admin-tab-btn" data-admin-tab="users">Пользователи</button>
+        <button class="admin-tab-btn" data-admin-tab="questions">Вопросы</button>
+        <button class="admin-tab-btn" data-admin-tab="answers">Ответы</button>
+        <button class="admin-tab-btn" data-admin-tab="ratings">Оценки</button>
+      </div>
+      <div id="admin-content">
+        <!-- Здесь будут подгружаться таблицы для редактирования -->
+        <p>Выберите раздел для управления данными.</p>
+      </div>
+      <div style="margin-top:1em;">
+        <p style="font-size:0.95em; color:#888;">
+          <b>Внимание:</b> Изменения правил нейдействия не затрагивают уникальные идентификаторы (ID).<br>
+          Для смены пароля пользователей отредактируйте поле "password" в Google Таблице на листе "users".
+        </p>
+      </div>
+    </section>
+
+    <!-- 8. Мини-уведомления, ошибки -->
+    <div id="notify" style="display:none;"></div>
+  </main>
+
+  <!-- Основной JS -->
+  <script src="main.js"></script>
+</body>
+</html>
