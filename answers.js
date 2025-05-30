@@ -1,32 +1,23 @@
 // answers.js
 
-const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
+window.SHEETDB_BASE = window.SHEETDB_BASE || "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
 
 // ===== ЗАГРУЗКА ОТВЕТОВ ДЛЯ ВОПРОСА =====
 async function loadAnswers(questionId) {
   try {
-    // Сохраним текущий выбранный вопрос
     window.currentQuestionId = questionId;
-
-    // Скрыть все секции, кроме answers
     if (typeof showPage === "function") showPage("answers-page");
-
-    // Можно дополнительно очистить поле для нового ответа
     const answerField = document.getElementById("answer-text");
     if (answerField) answerField.value = "";
-
-    // Заголовок вопроса (если есть)
     if (typeof renderAnswersTitle === "function") {
-      renderAnswersTitle(questionId); // реализуй, если надо выводить текст вопроса отдельно
+      renderAnswersTitle(questionId);
     }
-
     const res = await fetch(
-      `${SHEETDB_BASE}/search?sheet=answers&question_id=${encodeURIComponent(questionId)}`
+      `${window.SHEETDB_BASE}/search?sheet=answers&question_id=${encodeURIComponent(questionId)}`
     );
     const answers = await res.json();
     await renderAnswers(answers);
 
-    // Покажи форму только если пользователь вошел
     const form = document.getElementById("answer-form");
     if (form) {
       const user = getCurrentUser && getCurrentUser();
@@ -73,16 +64,14 @@ async function addAnswer(questionId, answerText) {
     date: (new Date()).toISOString().slice(0, 10)
   };
   try {
-    await fetch(`${SHEETDB_BASE}/sheet/answers`, {
+    await fetch(`${window.SHEETDB_BASE}/sheet/answers`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ data: [ans] })
     });
     notify && notify("Ответ добавлен!", "success");
-    // Сброс формы только если существует
     const answerForm = document.getElementById('answer-form');
     if (answerForm) answerForm.reset();
-    // Обновим список ответов
     await loadAnswers(questionId);
   } catch (e) {
     notify && notify("Не удалось добавить ответ", "error");
@@ -91,7 +80,6 @@ async function addAnswer(questionId, answerText) {
 
 // ===== СЛУШАТЕЛЬ ДЛЯ ЗАГРУЗКИ ОТВЕТОВ ПО ВЫБОРУ ВОПРОСА =====
 window.addEventListener('DOMContentLoaded', () => {
-  // Клик на вопрос для показа ответов
   const questionsBlock = document.getElementById('question-list');
   if (questionsBlock) {
     questionsBlock.addEventListener('click', (e) => {
@@ -102,16 +90,12 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // Кнопка "Назад к вопросам" (если есть)
   const answersBack = document.getElementById('answers-back');
   if (answersBack) {
     answersBack.onclick = () => {
       if (typeof showPage === "function") showPage("questions-page");
     };
   }
-
-  // Форма добавления ответа
   const answerForm = document.getElementById('answer-form');
   if (answerForm) {
     answerForm.onsubmit = async (e) => {
