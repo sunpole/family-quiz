@@ -1,35 +1,35 @@
 // main.js
 
-// Config
+// === Конфиг ===
 const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
 const LS_USER_KEY = "family_quiz_user";
 
-// --- Основная логика показа страниц ---
+// --- Показывать секцию по id, скрыть остальные ---
 function showPage(pageId) {
-  // Спрячь все секции
   [
     "questions-page", "ask-page", "answers-page",
     "search-page", "login-page", "register-page", "admin-panel"
   ].forEach(id => {
-    let el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (el) el.style.display = "none";
   });
-  // Покажи выбранную
-  let pageEl = document.getElementById(pageId);
+  const pageEl = document.getElementById(pageId);
   if (pageEl) pageEl.style.display = "";
 
-  // Admin таб в navbar
-  let user = getCurrentUser();
-  let adminLink = document.getElementById('admin-nav-link');
+  // Админка в навигации (только если статус admin)
+  const user = getCurrentUser();
+  const adminLink = document.getElementById('admin-nav-link');
   if (adminLink)
     adminLink.style.display = (user && user.status === "admin") ? "" : "none";
 }
 
-// --- Работа с текущим юзером ---
+// --- User localStorage ---
 function getCurrentUser() {
   try {
     return JSON.parse(localStorage.getItem(LS_USER_KEY));
-  } catch (e) { return null; }
+  } catch {
+    return null;
+  }
 }
 function saveUser(user) {
   localStorage.setItem(LS_USER_KEY, JSON.stringify(user));
@@ -38,41 +38,36 @@ function clearUser() {
   localStorage.removeItem(LS_USER_KEY);
 }
 
-// --- Статус и панель пользователя ---
+// --- Панель пользователя, статус ---
 function updateUserPanel() {
   const user = getCurrentUser();
   const userInfo = document.getElementById('user-info');
   const logoutBtn = document.getElementById('logout-btn');
   const loginBtn = document.getElementById('login-btn');
   const registerBtn = document.getElementById('register-btn');
-
-  if (user) {
-    if (userInfo) userInfo.textContent = user.login;
-    if (logoutBtn) logoutBtn.style.display = "";
-    if (loginBtn) loginBtn.style.display = "none";
-    if (registerBtn) registerBtn.style.display = "none";
-  } else {
-    if (userInfo) userInfo.textContent = "";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    if (loginBtn) loginBtn.style.display = "";
-    if (registerBtn) registerBtn.style.display = "";
-  }
+  if (userInfo) userInfo.textContent = user ? user.login : '';
+  if (logoutBtn) logoutBtn.style.display = user ? '' : 'none';
+  if (loginBtn) loginBtn.style.display = user ? 'none' : '';
+  if (registerBtn) registerBtn.style.display = user ? 'none' : '';
   updateUserStatusIndicator(user);
-}
 
+  // Перестраховка: обновить admin-nav при смене пользователя
+  const adminLink = document.getElementById('admin-nav-link');
+  if (adminLink)
+    adminLink.style.display = (user && user.status === "admin") ? "" : "none";
+}
 function updateUserStatusIndicator(user) {
   const indicator = document.getElementById('user-status-indicator');
   if (!indicator) return;
-  let status = 'guest', label = 'Гость', dotClass = 'status-guest';
+  let label = 'Гость', dotClass = 'status-guest';
   if (user && user.status) {
-    status = user.status;
-    if (status === 'admin') { label = 'Админ'; dotClass = 'status-admin'; }
-    else                   { label = 'Пользователь'; dotClass = 'status-user'; }
+    if (user.status === 'admin') { label = 'Админ'; dotClass = 'status-admin'; }
+    else { label = 'Пользователь'; dotClass = 'status-user'; }
   }
   indicator.innerHTML = `<span class="status-dot ${dotClass}"></span> <span>${label}</span>`;
 }
 
-// --- Уведомление ---
+// --- Мини-уведомления ---
 function notify(msg, type) {
   const n = document.getElementById('notify');
   if (!n) return;
@@ -82,95 +77,102 @@ function notify(msg, type) {
   setTimeout(() => { n.style.display = "none"; }, 3000);
 }
 
-// --- Сброс форм ---
+// --- Сбросить все формы (login/register/ask/answer) ---
 function resetForms() {
-  ['login-form', 'register-form'].forEach(id => {
-    let f = document.getElementById(id);
+  ['login-form', 'register-form', 'ask-form', 'answer-form'].forEach(id => {
+    const f = document.getElementById(id);
     if (f) f.reset();
   });
 }
 
-// --- Регистрация ---
+// --- Регистрация пользователя ---
 async function registerUser(login) {
   login = (login || "").trim();
   if (!login) throw new Error('Введите логин!');
-  // Проверка на дублирование
-  let resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}`);
-  let exist = await resp.json();
+  let resp, exist, adminsResp, admins, status;
+  try {
+    resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}`);
+    exist = await resp.json();
+  } catch (e) { throw new Error("Ошибка соединения с базой"); }
   if (exist.length) throw new Error("Этот логин уже занят");
-  // Проверяем есть ли админ в базе
-  let adminsResp = await fetch(`${SHEETDB_BASE}/search?sheet=users&status=admin`);
-  let admins = await adminsResp.json();
-  let status = admins.length === 0 ? "admin" : "user";
-  let user = {
+  try {
+    adminsResp = await fetch(`${SHEETDB_BASE}/search?sheet=users&status=admin`);
+    admins = await adminsResp.json();
+  } catch (e) { admins = []; }
+  status = admins.length === 0 ? "admin" : "user";
+  const user = {
     id: crypto.randomUUID ? crypto.randomUUID() : (Date.now() + Math.random()).toString(16),
     login: login,
     password: "0000",
     reg_date: (new Date()).toISOString().slice(0,10),
-    status: status
+    status
   };
-  await fetch(`${SHEETDB_BASE}/sheet/users`, {
-    method: "POST",
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({data: [user]})
-  });
-  // После регистрации сразу логиним!
+  try {
+    await fetch(`${SHEETDB_BASE}/sheet/users`, {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({data: [user]})
+    });
+  } catch (e) { throw new Error("Ошибка связи с базой"); }
   await loginUser(login, "0000");
 }
 
-// --- Логин ---
+// --- Логин пользователя ---
 async function loginUser(login, password) {
   login = (login || "").trim();
   if (!login || !password) throw new Error("Введите логин и пароль");
-  let resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
-  let users = await resp.json();
+  let resp, users;
+  try {
+    resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+    users = await resp.json();
+  } catch (e) { throw new Error("Нет ответа от базы"); }
   if (!users.length) throw new Error("Неверный логин или пароль");
-  let user = users[0];
+  const user = users[0];
   saveUser(user);
   updateUserPanel();
   showPage("questions-page");
 }
 
-// --- Выход ---
+// --- Выход пользователя ---
 function logoutUser() {
   clearUser();
   updateUserPanel();
   showPage("questions-page");
 }
 
-// --- Обработчики форм и переходов ---
+// --- Обработчики переходов, кнопок и форм ---
 window.addEventListener('DOMContentLoaded', () => {
   updateUserPanel();
   showPage("questions-page");
   resetForms();
 
-  // Проверка на наличие элементов перед назначением обработчиков
-  let loginBtn = document.getElementById('login-btn');
+  // Навигация
+  const loginBtn = document.getElementById('login-btn');
   if (loginBtn) loginBtn.onclick = () => { showPage('login-page'); resetForms(); };
-  let registerBtn = document.getElementById('register-btn');
+  const registerBtn = document.getElementById('register-btn');
   if (registerBtn) registerBtn.onclick = () => { showPage('register-page'); resetForms(); };
-  let logoutBtn = document.getElementById('logout-btn');
+  const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) logoutBtn.onclick = () => { logoutUser(); notify('Вы вышли', 'success'); };
-  let loginToRegister = document.getElementById('login-to-register');
+  const loginToRegister = document.getElementById('login-to-register');
   if (loginToRegister) loginToRegister.onclick = () => { showPage('register-page'); resetForms(); };
-  let registerToLogin = document.getElementById('register-to-login');
+  const registerToLogin = document.getElementById('register-to-login');
   if (registerToLogin) registerToLogin.onclick = () => { showPage('login-page'); resetForms(); };
-  let navQuestions = document.getElementById('nav-questions');
+  const navQuestions = document.getElementById('nav-questions');
   if (navQuestions) navQuestions.onclick = () => showPage('questions-page');
-  let navAsk = document.getElementById('nav-ask');
+  const navAsk = document.getElementById('nav-ask');
   if (navAsk) navAsk.onclick = () => showPage('ask-page');
-  let navSearch = document.getElementById('nav-search');
+  const navSearch = document.getElementById('nav-search');
   if (navSearch) navSearch.onclick = () => showPage('search-page');
-  let adminNavLink = document.getElementById('admin-nav-link');
+  const adminNavLink = document.getElementById('admin-nav-link');
   if (adminNavLink) adminNavLink.onclick = () => showPage('admin-panel');
 
   // Форма Логин
-  let loginForm = document.getElementById('login-form');
+  const loginForm = document.getElementById('login-form');
   if (loginForm) loginForm.onsubmit = async (e) => {
     e.preventDefault();
     try {
-      let login = document.getElementById('login-login').value;
-      let password = document.getElementById('login-password').value;
+      const login = document.getElementById('login-login').value;
+      const password = document.getElementById('login-password').value;
       await loginUser(login, password);
       notify("Вы вошли!", "success");
     } catch (err) {
@@ -179,11 +181,11 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   // Форма Регистрация
-  let registerForm = document.getElementById('register-form');
+  const registerForm = document.getElementById('register-form');
   if (registerForm) registerForm.onsubmit = async (e) => {
     e.preventDefault();
     try {
-      let login = document.getElementById('register-login').value;
+      const login = document.getElementById('register-login').value;
       await registerUser(login);
       notify("Регистрация успешна!", "success");
     } catch (err) {
