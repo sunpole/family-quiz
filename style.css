@@ -1,12 +1,12 @@
 :root {
   /* Цветовая палитра 2025: мягкая, дружелюбная */
-  --main-bg: #f8fafc;                /* общий фон */
-  --main-bg-alt: #f2f4ff;            /* фон карточек и панелей */
+  --main-bg: #f8fafc;
+  --main-bg-alt: #f2f4ff;
   --block-bg: #fff;
-  --accent: #82adee;                 /* голубой */
-  --accent-2: #ffcfa7;               /* персиковый */
-  --accent-3: #ccffd5;               /* мятный underline */
-  --accent-4: #f5a3ae;               /* розовый акцент */
+  --accent: #82adee;
+  --accent-2: #ffcfa7;
+  --accent-3: #ccffd5;
+  --accent-4: #f5a3ae;
   --font-main: #222c3e;
   --font-muted: #8d90a4;
   --border-soft: #eceff4;
@@ -17,6 +17,7 @@
   --shadow-main: 0 4px 28px 0 rgba(130, 150, 240, 0.08);
 }
 
+/* Общий фон, font, масштаб */
 body {
   background: var(--main-bg);
   color: var(--font-main);
@@ -26,6 +27,7 @@ body {
   font-size: 1.14em;
 }
 
+/* Логотип */
 .logo {
   font-weight: 900;
   font-size: 1.6rem;
@@ -35,6 +37,7 @@ body {
   padding-left: 3px;
 }
 
+/* Навигация */
 #navbar {
   background: var(--main-bg-alt);
   box-shadow: var(--shadow-main);
@@ -47,6 +50,7 @@ body {
   justify-content: space-between;
   min-height: var(--nav-height);
 }
+
 #nav-links {
   list-style: none;
   display: flex;
@@ -63,17 +67,14 @@ body {
   transition: background 0.18s, color 0.13s;
   font-size: 1.06em;
 }
-#nav-links a:hover, #nav-links a.active {
+#nav-links a:hover,
+#nav-links a.active {
   background: var(--accent-3);
   color: var(--accent);
 }
-
-/* Навбар: больше плавности для активного */
 #nav-links a.active {
   box-shadow: 0 2px 12px #82adee10;
 }
-
-/* Улучшена доступность: фокус по Tab */
 #nav-links a:focus-visible {
   background: var(--accent-4);
   color: #fff;
@@ -99,7 +100,8 @@ body {
   outline: none;
   cursor: pointer;
 }
-#user-bar button:active, #user-bar button:focus {
+#user-bar button:active,
+#user-bar button:focus {
   outline: 2px solid var(--accent-4);
   background: var(--accent-2);
   color: #222c3e;
@@ -130,16 +132,18 @@ body {
   vertical-align: middle;
   box-shadow: 0 1px 2px #bbb9;
 }
-.status-guest   { background: #bfc5d0; }
-.status-user    { background: #7dcd95; }
-.status-admin   { background: #ffd72d; border:2px solid #ffa70a; }
+.status-guest { background: #bfc5d0; }
+.status-user  { background: #7dcd95; }
+.status-admin { background: #ffd72d; border:2px solid #ffa70a; }
 
+/* Основной контейнер */
 main {
   margin: 0 auto;
   max-width: 680px;
   padding: clamp(10px, 4vw, 38px);
 }
 
+/* Секции/карточки */
 .page-section {
   background: var(--block-bg);
   border-radius: 15px;
@@ -157,6 +161,7 @@ h2 {
   letter-spacing: 0.01em;
 }
 
+/* Формы */
 input, textarea {
   width: 100%;
   border: 1.5px solid var(--border-soft);
@@ -168,22 +173,18 @@ input, textarea {
   background: #fafdff;
   transition: border .15s;
 }
-
-/* Улучшение для textarea */
 textarea {
   resize: vertical;
   min-height: 70px;
   max-height: 300px;
 }
-
 input:focus, textarea:focus {
   border-color: var(--accent);
   outline: none;
 }
 
-/* Карточки: вопросы, ответы, плавное наведение и фокус */
-#question-list, #answers-list, #search-results,
-#admin-content table {
+/* Списки и карточки */
+#question-list, #answers-list, #search-results, #admin-content table {
   margin-top: 1em;
   overflow-x: auto;
 }
@@ -202,7 +203,6 @@ input:focus, textarea:focus {
   background: #f4f9ff;
   box-shadow: 0 2px 19px #b3d6fc55;
 }
-
 .q-card:active, .a-card:active {
   background: #e8f6ff;
 }
@@ -216,7 +216,7 @@ input:focus, textarea:focus {
   color: var(--font-muted);
 }
 
-/* Иконки-кнопки на карточках — убран outline */
+/* Иконки-кнопки на карточках */
 .q-card .edit-btn, .a-card .edit-btn,
 .q-card .delete-btn, .a-card .delete-btn {
   background: none;
@@ -247,6 +247,7 @@ input:focus, textarea:focus {
   outline: none;
 }
 
+/* Кнопки */
 button, .btn {
   font-weight: 700;
   border-radius: 14px !important;
@@ -257,11 +258,42 @@ button, .btn {
   outline: none;
   cursor: pointer;
 }
-
 button:focus, .btn:focus {
   outline: 2px solid var(--accent-4);
 }
 
+/* Современная специальная кнопка поиска */
+.btn-modern {
+  border-radius: 1.5em !important;
+  font-weight: 600;
+  font-size: 1.1em;
+  letter-spacing: 0.01em;
+  padding: 0.58em 1.5em;
+  box-shadow: 0 2px 8px rgba(23,234,255,0.10);
+  background: linear-gradient(90deg, #17eaff 60%, #0ec1e9 100%);
+  color: #222;
+  border: none;
+  transition: background 0.22s, color 0.22s, box-shadow 0.15s;
+}
+.btn-modern:hover, .btn-modern:focus {
+  background: linear-gradient(90deg, #12c6d8 60%, #0c8bad 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(23,234,255,0.15);
+}
+
+/* Облака тегов и ссылки */
+#tag-cloud {
+  margin: 16px 0;
+}
+#ask-link {
+  margin-top: 1em;
+}
+.admin-hint {
+  font-size: 0.95em;
+  color: #888;
+}
+
+/* Уведомления */
 #notify {
   position: fixed;
   left: 50%;
@@ -280,8 +312,9 @@ button:focus, .btn:focus {
   opacity: 1;
   pointer-events: none;
 }
-#notify[style*="display: none"] {
+#notify[style*="display: none"], #notify.visually-hidden {
   opacity: 0 !important;
+  display: none !important;
 }
 #notify.error {
   background: var(--danger);
@@ -292,6 +325,7 @@ button:focus, .btn:focus {
   color: #186818;
 }
 
+/* Админ-панель */
 #admin-panel {
   background: var(--admin);
   border: 2px dashed var(--accent-2);
@@ -330,6 +364,10 @@ button:focus, .btn:focus {
   padding: 13px 8px 13px 8px;
 }
 
+/* Скрытие секций через hidden */
+[hidden] { display: none !important; }
+
+/* Медиа-адаптация */
 @media (max-width: 650px) {
   :root {
     --nav-height: 56px;
@@ -367,7 +405,6 @@ button:focus, .btn:focus {
     margin-bottom: 3px;
   }
 }
-
 @media (orientation: landscape) and (max-width: 950px) {
   body, input, textarea, button {
     font-size: 0.99em;
