@@ -24,7 +24,7 @@ function renderSearchQuestions(questions) {
 // --- ПОИСК ВОПРОСОВ по тексту и тегам ---
 async function searchQuestions(query, additionalTags=[]) {
   try {
-    const res = await fetch(`${window.SHEETDB_BASE}/sheet/questions`);
+    const res = await fetch(`${window.SHEETDB_BASE}?sheet=questions`);
     const questions = await res.json();
     query = (query || "").toLowerCase();
     additionalTags = (additionalTags || []).map(t => t.trim().toLowerCase()).filter(Boolean);
