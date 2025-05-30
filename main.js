@@ -1,3 +1,5 @@
+// main.js
+
 // Config
 const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
 const LS_USER_KEY = "family_quiz_user";
@@ -5,16 +7,22 @@ const LS_USER_KEY = "family_quiz_user";
 // --- Основная логика показа страниц ---
 function showPage(pageId) {
   // Спрячь все секции
-  ["questions-page", "ask-page", "answers-page", "search-page", "login-page", "register-page", "admin-panel"]
-    .forEach(id => document.getElementById(id).style.display = "none");
+  [
+    "questions-page", "ask-page", "answers-page",
+    "search-page", "login-page", "register-page", "admin-panel"
+  ].forEach(id => {
+    let el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
   // Покажи выбранную
-  if (document.getElementById(pageId))
-    document.getElementById(pageId).style.display = '';
+  let pageEl = document.getElementById(pageId);
+  if (pageEl) pageEl.style.display = "";
 
   // Admin таб в navbar
   let user = getCurrentUser();
-  document.getElementById('admin-nav-link').style.display =
-    user && user.status === "admin" ? "" : "none";
+  let adminLink = document.getElementById('admin-nav-link');
+  if (adminLink)
+    adminLink.style.display = (user && user.status === "admin") ? "" : "none";
 }
 
 // --- Работа с текущим юзером ---
@@ -39,21 +47,22 @@ function updateUserPanel() {
   const registerBtn = document.getElementById('register-btn');
 
   if (user) {
-    userInfo.textContent = user.login;
-    logoutBtn.style.display = "";
-    loginBtn.style.display = "none";
-    registerBtn.style.display = "none";
+    if (userInfo) userInfo.textContent = user.login;
+    if (logoutBtn) logoutBtn.style.display = "";
+    if (loginBtn) loginBtn.style.display = "none";
+    if (registerBtn) registerBtn.style.display = "none";
   } else {
-    userInfo.textContent = "";
-    logoutBtn.style.display = "none";
-    loginBtn.style.display = "";
-    registerBtn.style.display = "";
+    if (userInfo) userInfo.textContent = "";
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (loginBtn) loginBtn.style.display = "";
+    if (registerBtn) registerBtn.style.display = "";
   }
   updateUserStatusIndicator(user);
 }
 
 function updateUserStatusIndicator(user) {
   const indicator = document.getElementById('user-status-indicator');
+  if (!indicator) return;
   let status = 'guest', label = 'Гость', dotClass = 'status-guest';
   if (user && user.status) {
     status = user.status;
@@ -66,6 +75,7 @@ function updateUserStatusIndicator(user) {
 // --- Уведомление ---
 function notify(msg, type) {
   const n = document.getElementById('notify');
+  if (!n) return;
   n.className = type ? type : '';
   n.textContent = msg;
   n.style.display = "";
@@ -82,14 +92,14 @@ function resetForms() {
 
 // --- Регистрация ---
 async function registerUser(login) {
-  login = login.trim();
+  login = (login || "").trim();
   if (!login) throw new Error('Введите логин!');
   // Проверка на дублирование
-  let resp = await fetch(`${SHEETDB_BASE}/search?login=${encodeURIComponent(login)}`);
+  let resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}`);
   let exist = await resp.json();
   if (exist.length) throw new Error("Этот логин уже занят");
   // Проверяем есть ли админ в базе
-  let adminsResp = await fetch(`${SHEETDB_BASE}/search?status=admin`);
+  let adminsResp = await fetch(`${SHEETDB_BASE}/search?sheet=users&status=admin`);
   let admins = await adminsResp.json();
   let status = admins.length === 0 ? "admin" : "user";
   let user = {
@@ -99,7 +109,7 @@ async function registerUser(login) {
     reg_date: (new Date()).toISOString().slice(0,10),
     status: status
   };
-  await fetch(SHEETDB_BASE, {
+  await fetch(`${SHEETDB_BASE}/sheet/users`, {
     method: "POST",
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({data: [user]})
@@ -110,9 +120,9 @@ async function registerUser(login) {
 
 // --- Логин ---
 async function loginUser(login, password) {
-  login = login.trim();
+  login = (login || "").trim();
   if (!login || !password) throw new Error("Введите логин и пароль");
-  let resp = await fetch(`${SHEETDB_BASE}/search?login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+  let resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
   let users = await resp.json();
   if (!users.length) throw new Error("Неверный логин или пароль");
   let user = users[0];
@@ -131,24 +141,32 @@ function logoutUser() {
 // --- Обработчики форм и переходов ---
 window.addEventListener('DOMContentLoaded', () => {
   updateUserPanel();
-  showPage("questions-page"); // или авто-вопросы
+  showPage("questions-page");
   resetForms();
 
-  // Кнопки авторизации
-  document.getElementById('login-btn').onclick = () => { showPage('login-page'); resetForms(); };
-  document.getElementById('register-btn').onclick = () => { showPage('register-page'); resetForms(); };
-  document.getElementById('logout-btn').onclick = () => { logoutUser(); notify('Вы вышли', 'success'); };
-  document.getElementById('login-to-register').onclick = () => { showPage('register-page'); resetForms(); };
-  document.getElementById('register-to-login').onclick = () => { showPage('login-page'); resetForms(); };
-
-  // Навигация между страницами
-  document.getElementById('nav-questions').onclick = () => showPage('questions-page');
-  document.getElementById('nav-ask').onclick = () => showPage('ask-page');
-  document.getElementById('nav-search').onclick = () => showPage('search-page');
-  document.getElementById('admin-nav-link').onclick = () => showPage('admin-panel');
+  // Проверка на наличие элементов перед назначением обработчиков
+  let loginBtn = document.getElementById('login-btn');
+  if (loginBtn) loginBtn.onclick = () => { showPage('login-page'); resetForms(); };
+  let registerBtn = document.getElementById('register-btn');
+  if (registerBtn) registerBtn.onclick = () => { showPage('register-page'); resetForms(); };
+  let logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) logoutBtn.onclick = () => { logoutUser(); notify('Вы вышли', 'success'); };
+  let loginToRegister = document.getElementById('login-to-register');
+  if (loginToRegister) loginToRegister.onclick = () => { showPage('register-page'); resetForms(); };
+  let registerToLogin = document.getElementById('register-to-login');
+  if (registerToLogin) registerToLogin.onclick = () => { showPage('login-page'); resetForms(); };
+  let navQuestions = document.getElementById('nav-questions');
+  if (navQuestions) navQuestions.onclick = () => showPage('questions-page');
+  let navAsk = document.getElementById('nav-ask');
+  if (navAsk) navAsk.onclick = () => showPage('ask-page');
+  let navSearch = document.getElementById('nav-search');
+  if (navSearch) navSearch.onclick = () => showPage('search-page');
+  let adminNavLink = document.getElementById('admin-nav-link');
+  if (adminNavLink) adminNavLink.onclick = () => showPage('admin-panel');
 
   // Форма Логин
-  document.getElementById('login-form').onsubmit = async (e) => {
+  let loginForm = document.getElementById('login-form');
+  if (loginForm) loginForm.onsubmit = async (e) => {
     e.preventDefault();
     try {
       let login = document.getElementById('login-login').value;
@@ -161,7 +179,8 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   // Форма Регистрация
-  document.getElementById('register-form').onsubmit = async (e) => {
+  let registerForm = document.getElementById('register-form');
+  if (registerForm) registerForm.onsubmit = async (e) => {
     e.preventDefault();
     try {
       let login = document.getElementById('register-login').value;
