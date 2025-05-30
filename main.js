@@ -1,7 +1,5 @@
 // main.js
 
-// === Конфиг ===
-const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
 const LS_USER_KEY = "family_quiz_user";
 
 // --- Показывать секцию по id, скрыть остальные ---
@@ -91,12 +89,12 @@ async function registerUser(login) {
   if (!login) throw new Error('Введите логин!');
   let resp, exist, adminsResp, admins, status;
   try {
-    resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}`);
+    resp = await fetch(`${window.SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}`);
     exist = await resp.json();
   } catch (e) { throw new Error("Ошибка соединения с базой"); }
   if (exist.length) throw new Error("Этот логин уже занят");
   try {
-    adminsResp = await fetch(`${SHEETDB_BASE}/search?sheet=users&status=admin`);
+    adminsResp = await fetch(`${window.SHEETDB_BASE}/search?sheet=users&status=admin`);
     admins = await adminsResp.json();
   } catch (e) { admins = []; }
   status = admins.length === 0 ? "admin" : "user";
@@ -108,7 +106,7 @@ async function registerUser(login) {
     status
   };
   try {
-    await fetch(`${SHEETDB_BASE}/sheet/users`, {
+    await fetch(`${window.SHEETDB_BASE}/sheet/users`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({data: [user]})
@@ -123,7 +121,7 @@ async function loginUser(login, password) {
   if (!login || !password) throw new Error("Введите логин и пароль");
   let resp, users;
   try {
-    resp = await fetch(`${SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+    resp = await fetch(`${window.SHEETDB_BASE}/search?sheet=users&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
     users = await resp.json();
   } catch (e) { throw new Error("Нет ответа от базы"); }
   if (!users.length) throw new Error("Неверный логин или пароль");
