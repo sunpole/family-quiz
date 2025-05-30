@@ -106,7 +106,7 @@ async function registerUser(login) {
     status
   };
   try {
-    await fetch(`${window.SHEETDB_BASE}/sheet/users`, {
+    await fetch(`${window.SHEETDB_BASE}?sheet=users`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({data: [user]})
