@@ -15,7 +15,7 @@ window.filterQuestionsByTag = async function(tag) {
   }
   // Если кэша нет — загрузим из SheetDB
   try {
-    const res = await fetch(`${window.SHEETDB_BASE || "https://sheetdb.io/api/v1/jmjjg8jhv0yvi"}/sheet/questions`);
+    const res = await fetch(`${window.SHEETDB_BASE}/sheet/questions`);
     let questions = await res.json();
     questions = questions.filter(q =>
       (q.tags || '').toLowerCase().split(',').map(t => t.trim()).includes(tag)
