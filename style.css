@@ -1,0 +1,284 @@
+:root {
+    --main-bg: #f7f6fb;
+    --main-bg-alt: #edeffc;
+    --block-bg: #fff;
+    --accent: #8695ee;
+    --accent-2: #ffccb5;
+    --accent-3: #eaffd0;
+    --font-main: #273148;
+    --font-muted: #888ab8;
+    --border-soft: #ecedf9;
+    --admin: #ffe8ad;
+    --success: #afffb5;
+    --danger: #ffd6d6;
+    --nav-height: 60px;
+    --shadow-main: 0 4px 24px 0 rgba(130, 150, 240, 0.09);
+}
+
+body {
+    background: var(--main-bg);
+    color: var(--font-main);
+    font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.45rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin-right: 1em;
+}
+
+#navbar {
+    background: var(--main-bg-alt);
+    box-shadow: var(--shadow-main);
+    padding: 8px 0;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--nav-height);
+}
+
+#nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.1em;
+    margin: 0;
+    padding: 0;
+}
+#nav-links a {
+    text-decoration: none;
+    color: var(--font-main);
+    font-weight: 500;
+    border-radius: 22px;
+    padding: 7px 16px;
+    transition: background 0.17s;
+}
+#nav-links a:hover, #nav-links a.active {
+    background: var(--accent-3);
+    color: var(--accent);
+}
+
+#user-bar {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+}
+#user-bar button {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 16px;
+    padding: 7px 13px;
+    margin: 0 2px;
+    transition: background .2s;
+    box-shadow: 0 1px 5px #edeffc90;
+}
+#user-bar button:hover {
+    background: var(--accent-2);
+    color: #212;
+}
+
+main {
+    margin: 0 auto;
+    max-width: 640px;
+    padding: clamp(8px, 3vw, 30px);
+}
+
+.page-section {
+    background: var(--block-bg);
+    border-radius: 15px;
+    box-shadow: var(--shadow-main);
+    margin-bottom: 32px;
+    padding: 22px 14px 30px 14px;
+    transition: background .18s;
+}
+
+h2 {
+    font-weight: 700;
+    font-size: 1.33em;
+    margin-bottom: 18px;
+}
+
+input, textarea {
+    width: 100%;
+    border: 1.5px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 1em;
+    margin-top: 5px;
+    margin-bottom: 16px;
+    background: #f9f9ff;
+    transition: border .12s;
+}
+input:focus, textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+button, .btn {
+    font-weight: 600;
+    border-radius: 13px !important;
+    padding: 8px 20px !important;
+    font-size: 1.1em !important;
+    transition: background .15s, color .13s;
+}
+
+#question-list, #answers-list, #search-results,
+#admin-content table {
+    margin-top: 1em;
+}
+.q-card, .a-card {
+    background: var(--main-bg-alt);
+    border-radius: 13px;
+    box-shadow: 0 2px 10px #edeffc80;
+    margin-bottom: 11px;
+    padding: 13px 12px 14px 12px;
+    position: relative;
+    transition: background .13s;
+}
+.q-card .tags, .a-card .tags {
+    font-size: .98em;
+    color: var(--accent-2);
+    margin-top: 6px;
+}
+.q-card .author, .a-card .author {
+    font-size: .92em;
+    color: var(--font-muted);
+}
+
+.q-card .edit-btn, .a-card .edit-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.q-card .delete-btn, .a-card .delete-btn {
+    position: absolute;
+    top: 10px; right: 42px;
+    background: none;
+    border: none;
+    color: #f65959;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+#notify {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    padding: 13px 25px;
+    border-radius: 13px;
+    font-weight: 600;
+    font-size: 1em;
+    box-shadow: 0 2px 10px #edeffc99;
+    z-index: 9995;
+}
+#notify.error {
+    background: var(--danger);
+    color: #bb3a3a;
+}
+#notify.success {
+    background: var(--success);
+    color: #186818;
+}
+
+/* Admin panel styles */
+#admin-panel {
+    background: var(--admin);
+    border: 2px dashed var(--accent-2);
+    padding: 25px 18px;
+}
+#admin-tabs {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.admin-tab-btn {
+    background: var(--accent-2);
+    color: var(--font-main);
+    font-weight: 600;
+    border: none;
+    border-radius: 9px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background .14s;
+}
+.admin-tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+}
+#admin-content {
+    margin-top: 16px;
+    background: #fff9ef;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px #edeffa63;
+    padding: 14px 10px 14px 10px;
+}
+
+body, input, textarea, button {
+    font-size: 1.09em;
+}
+#user-info {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 1.08em;
+    margin-right: 10px;
+}
+
+@media (max-width: 650px) {
+    main {
+        max-width: 99%;
+        padding: 9px;
+    }
+    .page-section {
+        padding: 15px 5px 20px 5px;
+        margin-bottom: 12px;
+    }
+    #user-bar button {
+        padding: 6px 9px;
+        font-size: 0.97em;
+    }
+    h2 { font-size: 1.12em;}
+}
+
+@media (max-width: 470px) {
+    #navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 6px 2vw;
+        font-size: 0.97em;
+    }
+    .logo {
+        margin-bottom: 3px;
+        font-size: 1.1em;
+    }
+    #nav-links {
+        gap: .7em;
+        margin-bottom: 3px;
+    }
+}
+
+@media (orientation: landscape) and (max-width: 900px) {
+    body, input, textarea, button {
+      font-size: 1em;
+    }
+}
+
+@media (min-width: 650px) and (max-width: 1050px) {
+    main {
+        max-width: 88vw;
+    }
+}
