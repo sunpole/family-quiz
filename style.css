@@ -23,7 +23,7 @@ body {
   font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
-  font-size: 1.14em; /* чуть крупнее для детей */
+  font-size: 1.14em;
 }
 
 .logo {
@@ -68,6 +68,19 @@ body {
   color: var(--accent);
 }
 
+/* Навбар: больше плавности для активного */
+#nav-links a.active {
+  box-shadow: 0 2px 12px #82adee10;
+}
+
+/* Улучшена доступность: фокус по Tab */
+#nav-links a:focus-visible {
+  background: var(--accent-4);
+  color: #fff;
+  outline: none;
+}
+
+/* User bar */
 #user-bar {
   display: flex;
   align-items: center;
@@ -80,13 +93,16 @@ body {
   border-radius: 17px;
   padding: 8px 15px;
   margin: 0 2px;
-  transition: background .18s;
+  transition: background .18s, color .13s;
   box-shadow: 0 1px 6px #edeffc80;
   font-weight: 700;
   outline: none;
+  cursor: pointer;
 }
 #user-bar button:active, #user-bar button:focus {
   outline: 2px solid var(--accent-4);
+  background: var(--accent-2);
+  color: #222c3e;
 }
 #user-bar button:hover {
   background: var(--accent-2);
@@ -152,23 +168,24 @@ input, textarea {
   background: #fafdff;
   transition: border .15s;
 }
+
+/* Улучшение для textarea */
+textarea {
+  resize: vertical;
+  min-height: 70px;
+  max-height: 300px;
+}
+
 input:focus, textarea:focus {
   border-color: var(--accent);
   outline: none;
 }
 
-button, .btn {
-  font-weight: 700;
-  border-radius: 14px !important;
-  padding: 11px 23px !important;
-  font-size: 1.11em !important;
-  transition: background .16s, color .11s;
-  box-shadow: 0 1px 5px #edeffc98;
-}
-
+/* Карточки: вопросы, ответы, плавное наведение и фокус */
 #question-list, #answers-list, #search-results,
 #admin-content table {
   margin-top: 1em;
+  overflow-x: auto;
 }
 .q-card, .a-card {
   background: var(--main-bg-alt);
@@ -177,8 +194,17 @@ button, .btn {
   margin-bottom: 14px;
   padding: 16px 13px 15px 13px;
   position: relative;
-  transition: background .13s;
+  transition: background .13s, box-shadow .15s;
   font-size: 1.03em;
+}
+.q-card:hover, .a-card:hover,
+.q-card:focus-within, .a-card:focus-within {
+  background: #f4f9ff;
+  box-shadow: 0 2px 19px #b3d6fc55;
+}
+
+.q-card:active, .a-card:active {
+  background: #e8f6ff;
 }
 .q-card .tags, .a-card .tags {
   font-size: .99em;
@@ -190,23 +216,50 @@ button, .btn {
   color: var(--font-muted);
 }
 
+/* Иконки-кнопки на карточках — убран outline */
+.q-card .edit-btn, .a-card .edit-btn,
+.q-card .delete-btn, .a-card .delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.23em;
+  cursor: pointer;
+  outline: none;
+  transition: color .15s;
+}
 .q-card .edit-btn, .a-card .edit-btn {
   position: absolute;
   top: 10px; right: 11px;
-  background: none;
-  border: none;
   color: var(--accent);
-  font-size: 1.23em;
-  cursor: pointer;
+}
+.q-card .edit-btn:focus, .q-card .edit-btn:active,
+.a-card .edit-btn:focus, .a-card .edit-btn:active {
+  color: #367bbd !important;
+  outline: none;
 }
 .q-card .delete-btn, .a-card .delete-btn {
   position: absolute;
   top: 10px; right: 46px;
-  background: none;
-  border: none;
   color: #f65959;
-  font-size: 1.23em;
+}
+.q-card .delete-btn:focus, .q-card .delete-btn:active,
+.a-card .delete-btn:focus, .a-card .delete-btn:active {
+  color: #b02525 !important;
+  outline: none;
+}
+
+button, .btn {
+  font-weight: 700;
+  border-radius: 14px !important;
+  padding: 11px 23px !important;
+  font-size: 1.11em !important;
+  transition: background .16s, color .11s;
+  box-shadow: 0 1px 5px #edeffc98;
+  outline: none;
   cursor: pointer;
+}
+
+button:focus, .btn:focus {
+  outline: 2px solid var(--accent-4);
 }
 
 #notify {
@@ -223,6 +276,12 @@ button, .btn {
   box-shadow: 0 2px 11px #edeffcbb;
   z-index: 9995;
   letter-spacing: 0.01em;
+  transition: opacity .27s;
+  opacity: 1;
+  pointer-events: none;
+}
+#notify[style*="display: none"] {
+  opacity: 0 !important;
 }
 #notify.error {
   background: var(--danger);
@@ -252,12 +311,16 @@ button, .btn {
   border-radius: 10px;
   padding: 9px 16px;
   cursor: pointer;
-  transition: background .13s;
+  transition: background .13s, color .1s;
   font-size: 1.01em;
+  outline: none;
 }
 .admin-tab-btn.active {
   background: var(--accent);
   color: #fff;
+}
+.admin-tab-btn:focus-visible {
+  outline: 2px solid var(--accent-4);
 }
 #admin-content {
   margin-top: 16px;
