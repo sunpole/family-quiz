@@ -28,7 +28,7 @@ async function rateAnswer(answerId, ratingValue) {
       date: (new Date()).toISOString().slice(0, 10)
     };
 
-    await fetch(`${window.SHEETDB_BASE}/sheet/ratings`, {
+    await fetch(`${window.SHEETDB_BASE}?sheet=ratings`, { // исправлено здесь
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({data: [ratingObj]})
