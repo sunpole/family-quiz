@@ -1,3 +1,5 @@
+// answers.js
+
 const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
 
 // ===== ЗАГРУЗКА ОТВЕТОВ ДЛЯ ВОПРОСА =====
