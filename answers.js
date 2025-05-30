@@ -64,7 +64,7 @@ async function addAnswer(questionId, answerText) {
     date: (new Date()).toISOString().slice(0, 10)
   };
   try {
-    await fetch(`${window.SHEETDB_BASE}/sheet/answers`, {
+    await fetch(`${window.SHEETDB_BASE}?sheet=answers`, { // <-- исправлено тут
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ data: [ans] })
