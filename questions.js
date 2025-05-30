@@ -1,4 +1,4 @@
-const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
+// questions.js
 
 // ===========================
 // ВЫВОД ВСЕХ ВОПРОСОВ (+ фильтр)
@@ -7,7 +7,7 @@ let allQuestions = []; // для фильтрации
 
 async function loadQuestions() {
   try {
-    const res = await fetch(`${SHEETDB_BASE}/sheet/questions?sort=date&sort_by=desc`);
+    const res = await fetch(`${window.SHEETDB_BASE}/sheet/questions?sort=date&sort_by=desc`);
     const questions = await res.json();
     allQuestions = questions;
     renderQuestions(questions);
@@ -77,7 +77,7 @@ async function addQuestion(questionText, tags) {
     tags: tags.join(', ')
   };
   try {
-    await fetch(`${SHEETDB_BASE}/sheet/questions`, {
+    await fetch(`${window.SHEETDB_BASE}/sheet/questions`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ data: [q] })
@@ -103,7 +103,7 @@ async function deleteQuestion(questionId) {
 // ===========================
 async function loadTags() {
   try {
-    const res = await fetch(`${SHEETDB_BASE}/sheet/questions`);
+    const res = await fetch(`${window.SHEETDB_BASE}/sheet/questions`);
     const questions = await res.json();
     let tagSet = new Set();
     questions.forEach(q =>
