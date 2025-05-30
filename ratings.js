@@ -1,7 +1,5 @@
 // ratings.js — 5-балльная оценка (-2..2) для answers
 
-const SHEETDB_BASE = "https://sheetdb.io/api/v1/jmjjg8jhv0yvi";
-
 // ===== ВЫСТАВИТЬ ОЦЕНКУ ОТВЕТУ (-2..2) =====
 async function rateAnswer(answerId, ratingValue) {
   try {
@@ -13,7 +11,7 @@ async function rateAnswer(answerId, ratingValue) {
 
     // Один голос на ответ для каждого пользователя
     const checkResp = await fetch(
-      `${SHEETDB_BASE}/search?sheet=ratings&answer_id=${encodeURIComponent(answerId)}&author_id=${encodeURIComponent(user.id)}`
+      `${window.SHEETDB_BASE}/search?sheet=ratings&answer_id=${encodeURIComponent(answerId)}&author_id=${encodeURIComponent(user.id)}`
     );
     const ratings = await checkResp.json();
 
@@ -30,7 +28,7 @@ async function rateAnswer(answerId, ratingValue) {
       date: (new Date()).toISOString().slice(0, 10)
     };
 
-    await fetch(`${SHEETDB_BASE}/sheet/ratings`, {
+    await fetch(`${window.SHEETDB_BASE}/sheet/ratings`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({data: [ratingObj]})
@@ -51,7 +49,7 @@ async function rateAnswer(answerId, ratingValue) {
 // ======= Получить средний рейтинг ответа =========
 async function getAnswerScore(answerId) {
   try {
-    const resp = await fetch(`${SHEETDB_BASE}/search?sheet=ratings&answer_id=${encodeURIComponent(answerId)}`);
+    const resp = await fetch(`${window.SHEETDB_BASE}/search?sheet=ratings&answer_id=${encodeURIComponent(answerId)}`);
     const ratings = await resp.json();
     if (!ratings.length) return null;
     const sum = ratings.map(r => Number(r.rating) || 0).reduce((a, b) => a + b, 0);
